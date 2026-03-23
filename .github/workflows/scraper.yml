@@ -2,14 +2,13 @@ name: Wajha Attractions Scraper
 
 on:
   schedule:
-    # UAE is UTC+4. Run at 4:00 UTC (8am UAE) and 16:00 UTC (8pm UAE)
     - cron: "0 4 * * *"
     - cron: "0 16 * * *"
-  workflow_dispatch:       # allow manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   scrape:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 30
 
     steps:
@@ -35,8 +34,7 @@ jobs:
 
       - name: Install Playwright browsers (Chromium only)
         run: |
-          playwright install chromium
-          playwright install-deps chromium
+          playwright install chromium --with-deps
 
       - name: Run scraper
         env:
