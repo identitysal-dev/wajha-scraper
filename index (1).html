@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wajha • UAE Attractions Deals</title>
+<meta name="description" content="Live UAE attractions deals, ticket prices and open/closed status across Dubai, Abu Dhabi, RAK and Sharjah.">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0a0a0a;
+  --bg2: #111;
+  --bg3: #1a1a1a;
+  --border: rgba(255,255,255,0.08);
+  --border2: rgba(255,255,255,0.15);
+  --text: #f0ede6;
+  --text2: #888;
+  --text3: #555;
+  --accent: #c8a96e;
+  --accent2: #e8c97e;
+  --green: #4caf7d;
+  --red: #e05a5a;
+  --blue: #5a9fd4;
+  --orange: #f0a030;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* ── Header ── */
+.header {
+  padding: 16px 20px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 20;
+}
+.logo { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--accent); }
+.logo-dot { color: var(--accent2); }
+.header-sub { font-size: 11px; color: var(--text2); letter-spacing: 0.06em; text-transform: uppercase; }
+.refresh-btn {
+  margin-left: auto;
+  background: rgba(200,169,110,0.1);
+  border: 1px solid rgba(200,169,110,0.3);
+  color: var(--accent);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.2s;
+}
+.refresh-btn:hover { background: rgba(200,169,110,0.2); }
+.refresh-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { display: inline-block; }
+.spin.active { animation: spin 0.8s linear infinite; }
+
+/* ── Stats ── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.stat-cell { background: var(--bg); padding: 12px 16px; text-align: center; }
+.stat-num { font-size: 22px; font-weight: 600; }
+.stat-label { font-size: 10px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+.c-green { color: var(--green); }
+.c-red   { color: var(--red); }
+.c-gold  { color: var(--accent); }
+
+/* ── Filters ── */
+.filters {
+  padding: 10px 16px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 53px;
+  z-index: 10;
+}
+.filter-btn {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.filter-btn:hover { border-color: var(--border2); color: var(--text); }
+.filter-btn.active { background: rgba(200,169,110,0.15); border-color: var(--accent); color: var(--accent); }
+
+/* ── Emirate header ── */
+.emirate-header {
+  padding: 10px 16px 6px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 97px;
+  z-index: 9;
+}
+
+/* ── Cards ── */
+.card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 16px;
+  transition: background 0.15s;
+}
+.card:hover { background: var(--bg2); }
+.card.closed { opacity: 0.45; }
+
+.card-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.card-note {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 500px;
+}
+.card-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.tag {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+.tag-cat    { background: rgba(90,159,212,0.12);  color: var(--blue); }
+.tag-closed { background: rgba(224,90,90,0.12);   color: var(--red); }
+.tag-free   { background: rgba(76,175,125,0.12);  color: var(--green); }
+.tag-id     { background: rgba(200,169,110,0.12); color: var(--accent); }
+.tag-warn   { background: rgba(240,160,48,0.12);  color: var(--orange); }
+
+/* ── Price column ── */
+.price-col { text-align: right; min-width: 85px; }
+.price-main { font-size: 14px; font-weight: 600; color: var(--accent2); line-height: 1.3; }
+.price-main.free   { color: var(--green); }
+.price-main.closed-lbl { color: var(--red); font-size: 11px; font-weight: 400; }
+.price-main.verify { color: var(--text2); font-size: 11px; font-weight: 400; }
+.price-orig { font-size: 10px; color: var(--text3); text-decoration: line-through; margin-top: 2px; }
+.price-meta { font-size: 10px; color: var(--text3); margin-top: 3px; line-height: 1.5; }
+.src-link {
+  font-size: 10px;
+  color: var(--blue);
+  opacity: 0.7;
+  text-decoration: none;
+  display: block;
+  margin-top: 4px;
+}
+.src-link:hover { opacity: 1; }
+
+/* ── Scrape indicator ── */
+.scrape-dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.scrape-ok   { background: var(--green); }
+.scrape-fail { background: var(--red); }
+
+/* ── States ── */
+.loading-overlay {
+  padding: 60px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  color: var(--text2);
+  font-size: 13px;
+}
+.loader-ring {
+  width: 26px; height: 26px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+.error-box {
+  margin: 20px;
+  padding: 18px;
+  background: rgba(224,90,90,0.06);
+  border: 1px solid rgba(224,90,90,0.2);
+  border-radius: 10px;
+  font-size: 12px;
+  color: var(--red);
+  line-height: 1.9;
+}
+.error-box code {
+  background: rgba(255,255,255,0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  color: var(--text2);
+  word-break: break-all;
+}
+.empty-state {
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text2);
+  font-size: 13px;
+}
+
+/* ── Footer ── */
+.footer {
+  padding: 12px 16px;
+  font-size: 10px;
+  color: var(--text3);
+  text-align: center;
+  border-top: 1px solid var(--border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 500px) {
+  .stats-row { grid-template-columns: repeat(2, 1fr); }
+  .card { grid-template-columns: 1fr; }
+  .price-col { text-align: left; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Wajha<span class="logo-dot">•</span></div>
+  <div class="header-sub">UAE Attractions — Live</div>
+  <button class="refresh-btn" id="refreshBtn" onclick="loadSheet()">
+    <span class="spin" id="spinIcon">↻</span> Refresh
+  </button>
+</div>
+
+<div class="stats-row">
+  <div class="stat-cell">
+    <div class="stat-num" id="s-total">—</div>
+    <div class="stat-label">Attractions</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num c-green" id="s-free">—</div>
+    <div class="stat-label">Free / Offers</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num c-gold" id="s-open">—</div>
+    <div class="stat-label">Open</div>
+  </div>
+  <div class="stat-cell">
+    <div class="stat-num c-red" id="s-closed">—</div>
+    <div class="stat-label">Closed</div>
+  </div>
+</div>
+
+<div class="filters">
+  <button class="filter-btn active" onclick="setFilter('all', this)">All</button>
+  <button class="filter-btn" onclick="setFilter('Dubai', this)">Dubai</button>
+  <button class="filter-btn" onclick="setFilter('Abu Dhabi', this)">Abu Dhabi</button>
+  <button class="filter-btn" onclick="setFilter('RAK', this)">RAK</button>
+  <button class="filter-btn" onclick="setFilter('Sharjah', this)">Sharjah</button>
+  <button class="filter-btn" onclick="setFilter('free', this)">Free Entry</button>
+  <button class="filter-btn" onclick="setFilter('offers', this)">Has Offer</button>
+  <button class="filter-btn" onclick="setFilter('open', this)">Open</button>
+  <button class="filter-btn" onclick="setFilter('closed', this)">Closed</button>
+</div>
+
+<div id="content">
+  <div class="loading-overlay">
+    <div class="loader-ring"></div>
+    <div>Loading from Google Sheets…</div>
+  </div>
+</div>
+
+<div class="footer" id="footer">Prices indicative — verify before visiting.</div>
+
+<script>
+// ── CONFIG ─────────────────────────────────────────────────────────────────
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT0mwqDRgeSSlYs6S-Y-RYVm7TiJNHCR8t_8AKuu8sHzwi8ap0d5qGRk-MMvFfHkffg5VziVXXNg5J9/pub?gid=0&single=true&output=csv';
+
+// ── STATE ──────────────────────────────────────────────────────────────────
+let allRows = [];
+let activeFilter = 'all';
+
+// ── CSV PARSER ─────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+  return lines.slice(1).map(line => {
+    const vals = [];
+    let cur = '', inQ = false;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (c === '"') { inQ = !inQ; }
+      else if (c === ',' && !inQ) { vals.push(cur); cur = ''; }
+      else { cur += c; }
+    }
+    vals.push(cur);
+    const obj = {};
+    headers.forEach((h, i) => { obj[h] = (vals[i] || '').replace(/^"|"$/g, '').trim(); });
+    return obj;
+  }).filter(r => r.name && r.name.length > 1);
+}
+
+// ── HELPERS ────────────────────────────────────────────────────────────────
+const isFree = r => {
+  const o = (r.offer || '').toLowerCase();
+  const p = (r.price || '').toLowerCase();
+  return o.includes('free') || p === '0' || p === 'free' || p.startsWith('free');
+};
+const hasOffer     = r => r.offer && r.offer.trim().length > 0 && r.status !== 'closed';
+const isResident   = r => ((r.offer || '') + (r.raw_snippet || '')).toLowerCase().match(/resident|emirates id|uae id/);
+const scrapeGood   = r => ['TRUE','true','1'].includes(r.scrape_ok);
+
+// ── FETCH ──────────────────────────────────────────────────────────────────
+async function loadSheet() {
+  const btn  = document.getElementById('refreshBtn');
+  const spin = document.getElementById('spinIcon');
+  btn.disabled = true;
+  spin.classList.add('active');
+  document.getElementById('content').innerHTML =
+    '<div class="loading-overlay"><div class="loader-ring"></div><div>Fetching from Google Sheets…</div></div>';
+
+  try {
+    const res = await fetch(CSV_URL + '&t=' + Date.now());
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+
+    if (text.trim().startsWith('<'))
+      throw new Error('Google returned HTML instead of CSV. Make sure the sheet is published as CSV (File → Share → Publish to web → CSV).');
+    if (!text.includes(','))
+      throw new Error('Response does not look like CSV.');
+
+    allRows = parseCSV(text);
+    if (!allRows.length)
+      throw new Error('No data rows found in sheet.');
+
+    updateStats();
+    renderCards();
+
+    const now = new Date();
+    document.getElementById('footer').textContent =
+      'Fetched ' + now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) +
+      ' · ' + now.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) +
+      ' · ' + allRows.length + ' attractions · Prices indicative — verify before visiting.';
+
+  } catch (err) {
+    document.getElementById('content').innerHTML = `
+      <div class="error-box">
+        <strong>Could not load sheet</strong><br><br>
+        ${err.message}<br><br>
+        URL: <code>${CSV_URL}</code>
+      </div>`;
+  } finally {
+    btn.disabled = false;
+    spin.classList.remove('active');
+  }
+}
+
+// ── STATS ──────────────────────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('s-total').textContent  = allRows.length;
+  document.getElementById('s-free').textContent   = allRows.filter(r => isFree(r) || hasOffer(r)).length;
+  document.getElementById('s-open').textContent   = allRows.filter(r => r.status === 'open').length;
+  document.getElementById('s-closed').textContent = allRows.filter(r => r.status === 'closed').length;
+}
+
+// ── FILTER ─────────────────────────────────────────────────────────────────
+function setFilter(f, el) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCards();
+}
+
+function getFiltered() {
+  return allRows.filter(r => {
+    if (activeFilter === 'Dubai')     return r.emirate === 'Dubai';
+    if (activeFilter === 'Abu Dhabi') return r.emirate === 'Abu Dhabi';
+    if (activeFilter === 'RAK')       return (r.emirate || '').includes('Khaimah') || (r.emirate || '').toUpperCase().includes('RAK');
+    if (activeFilter === 'Sharjah')   return r.emirate === 'Sharjah';
+    if (activeFilter === 'free')      return isFree(r);
+    if (activeFilter === 'offers')    return hasOffer(r);
+    if (activeFilter === 'open')      return r.status === 'open';
+    if (activeFilter === 'closed')    return r.status === 'closed';
+    return true;
+  });
+}
+
+// ── RENDER ─────────────────────────────────────────────────────────────────
+function renderCards() {
+  const list    = getFiltered();
+  const content = document.getElementById('content');
+
+  if (!list.length) {
+    content.innerHTML = '<div class="empty-state">No attractions match this filter.</div>';
+    return;
+  }
+
+  const ORDER   = ['Dubai', 'Abu Dhabi', 'Ras Al Khaimah', 'Sharjah'];
+  const grouped = {};
+  for (const r of list) {
+    const e = r.emirate || 'Other';
+    if (!grouped[e]) grouped[e] = [];
+    grouped[e].push(r);
+  }
+  const keys = ORDER.filter(e => grouped[e])
+    .concat(Object.keys(grouped).filter(e => !ORDER.includes(e)));
+
+  let html = '';
+
+  for (const emirate of keys) {
+    const items = grouped[emirate];
+    html += `<div class="emirate-header">${emirate} &mdash; ${items.length}</div>`;
+
+    for (const r of items) {
+      const closed         = r.status === 'closed';
+      const free           = isFree(r);
+      const ok             = scrapeGood(r);
+      const hasScrapeField = r.scrape_ok !== undefined && r.scrape_ok !== '';
+
+      // Price block
+      let priceHtml = '';
+      if (closed) {
+        priceHtml = `<div class="price-main closed-lbl">⊗ Closed</div>`;
+        if (r.closed_reason)
+          priceHtml += `<div class="price-meta" style="color:#c44;max-width:90px">${r.closed_reason.slice(0, 55)}</div>`;
+      } else if (free) {
+        priceHtml = `<div class="price-main free">FREE</div>`;
+        const p = (r.price || '').toLowerCase();
+        if (r.price && !['0','free'].includes(p) && !p.startsWith('free'))
+          priceHtml += `<div class="price-orig">${r.price}</div>`;
+      } else if (r.price) {
+        priceHtml = `<div class="price-main">${r.price}</div>`;
+      } else {
+        priceHtml = `<div class="price-main verify">Verify</div>`;
+      }
+      if (r.last_checked)
+        priceHtml += `<div class="price-meta">${r.last_checked}</div>`;
+      if (r.source_url && r.source_url.startsWith('http'))
+        priceHtml += `<a class="src-link" href="${r.source_url}" target="_blank" rel="noopener">${r.source_label || 'Official site'} ↗</a>`;
+
+      // Tags
+      const tags = [];
+      if (r.category)      tags.push(`<span class="tag tag-cat">${r.category}</span>`);
+      if (closed)          tags.push(`<span class="tag tag-closed">Closed</span>`);
+      if (free)            tags.push(`<span class="tag tag-free">Free</span>`);
+      if (isResident(r))   tags.push(`<span class="tag tag-id">Emirates ID</span>`);
+      if (hasScrapeField && !ok) tags.push(`<span class="tag tag-warn">Verify data</span>`);
+
+      const dot  = hasScrapeField
+        ? `<span class="scrape-dot ${ok ? 'scrape-ok' : 'scrape-fail'}"></span>`
+        : '';
+      const note = r.offer || r.raw_snippet || '';
+
+      html += `<div class="card${closed ? ' closed' : ''}">
+        <div>
+          <div class="card-name">${dot}${r.name}</div>
+          ${note ? `<div class="card-note">${note.slice(0, 140)}${note.length > 140 ? '…' : ''}</div>` : ''}
+          <div class="card-tags">${tags.join('')}</div>
+        </div>
+        <div class="price-col">${priceHtml}</div>
+      </div>`;
+    }
+  }
+
+  content.innerHTML = html;
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+loadSheet();
+</script>
+</body>
+</html>
